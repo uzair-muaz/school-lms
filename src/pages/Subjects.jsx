@@ -2,6 +2,7 @@ import { Button } from "antd";
 import CourseTable from "../components/CourseTable";
 import { useState } from "react";
 import { useDeleteCourse } from "../hooks/hooks";
+import CourseModal from "../components/CourseModal";
 
 const Subjects = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -28,17 +29,24 @@ const Subjects = () => {
   return (
     <div>
       <div className="mb-4 flex items-center justify-end">
-        <Button type="primary">+ Add New Assignment</Button>
+        <Button
+          type="primary"
+          onClick={() => {
+            setIsModalVisible(true);
+          }}
+        >
+          + Add New Assignment
+        </Button>
       </div>
       <div className="bg-white p-5">
         <CourseTable handleDelete={handleDelete} handleEdit={handleEdit} />
       </div>
-      {/* 
+
       <CourseModal
         visible={isModalVisible}
         onCancel={handleCloseModal}
         courseId={currentCourseId}
-      /> */}
+      />
     </div>
   );
 };

@@ -64,7 +64,7 @@ const AssignmentTable = () => {
       pagination={{
         current: page,
         pageSize: 4,
-        total: data?.meta.total,
+        total: data?.meta?.total,
         onChange: (newPage) => setPage(newPage),
       }}
     />

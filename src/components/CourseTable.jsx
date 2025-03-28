@@ -1,6 +1,6 @@
 import { Button, Popconfirm, Table } from "antd";
 import { useState } from "react";
-import { useCourses } from "../hooks/useCourseData";
+import { useCourses } from "../hooks/hooks";
 
 const CourseTable = ({ handleEdit, handleDelete }) => {
   const [page, setPage] = useState(1);

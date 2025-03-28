@@ -6,9 +6,12 @@ import {
   createCourse,
   deleteCourse,
   fetchAssignedCourses,
+  fetchCourseById,
   fetchCourses,
+  fetchUsers,
   updateCourse,
 } from "../apis/courseApi";
+import { fetchAdminUsers } from "../apis/userApi";
 
 // --------- Assignments ------------
 export const useCreateAssignment = () => {
@@ -98,11 +101,18 @@ export const useCourses = (page, limit) => {
   });
 };
 
+export const useCourse = (courseId) => {
+  return useQuery({
+    queryKey: ["course", courseId],
+    queryFn: () => fetchCourseById(courseId),
+    enabled: !!courseId,
+  });
+};
+
 export const useAssignedCourses = () => {
   return useQuery({
     queryKey: ["course", "assigned"],
     queryFn: () => fetchAssignedCourses(),
-    keepPreviousData: true,
   });
 };
 
@@ -151,5 +161,21 @@ export const useUpdateCourse = () => {
       console.error("error", error);
       message.error(`Failed to delete course. Please try again later.`);
     },
+  });
+};
+
+// ------------------ Users -------------------------
+
+export const useUsers = () => {
+  return useQuery({
+    queryKey: ["users"],
+    queryFn: () => fetchUsers(),
+  });
+};
+
+export const useAdminUsers = (page, limit) => {
+  return useQuery({
+    queryKey: ["users", "admin", page, limit],
+    queryFn: () => fetchAdminUsers(page, limit),
   });
 };

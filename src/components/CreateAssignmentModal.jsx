@@ -10,7 +10,7 @@ import {
   Radio,
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
-import { useCreateAssignment } from "../hooks/hooks";
+import { useAssignedCourses, useCreateAssignment } from "../hooks/hooks";
 
 const { Option } = Select;
 
@@ -18,19 +18,27 @@ const CreateAssignmentModal = ({ visible, onCancel }) => {
   const [form] = Form.useForm();
   const submitAssignment = useCreateAssignment();
 
+  const { data: assignedCourses } = useAssignedCourses();
+
   const onFinish = async (values) => {
+    console.log("values", values);
     const formData = new FormData();
     formData.append("title", values.title);
     formData.append("description", values.description);
-    formData.append("subject", values.subject);
+    formData.append("courseId", values.subject);
     formData.append("dueDate", values.dueDate.format("YYYY-MM-DD"));
-    formData.append("allowLateSubmission", values.allowLateSubmission);
+    formData.append(
+      "isAllowLateSubmission",
+      values.allowLateSubmission === "true" ? true : false,
+    );
     formData.append("gradingCriteria", values.gradingCriteria);
-    if (values.files) {
-      values.files.fileList.forEach((file) => {
-        formData.append("files", file.originFileObj);
+    if (values.file) {
+      values.file.fileList.forEach((file) => {
+        formData.append("file", file);
       });
     }
+
+    console.log("formData", formData);
 
     await submitAssignment.mutateAsync(
       { formData: formData },
@@ -76,9 +84,11 @@ const CreateAssignmentModal = ({ visible, onCancel }) => {
             rules={[{ required: true, message: "Select subject" }]}
           >
             <Select placeholder="Select Subject">
-              <Option value="math">Math</Option>
-              <Option value="science">Science</Option>
-              <Option value="history">History</Option>
+              {assignedCourses?.data?.map((course) => (
+                <Option key={course.id} value={course.id}>
+                  {course.name}
+                </Option>
+              ))}
             </Select>
           </Form.Item>
 
@@ -99,19 +109,16 @@ const CreateAssignmentModal = ({ visible, onCancel }) => {
           <Upload beforeUpload={() => false} multiple>
             <Button icon={<UploadOutlined />}>Browse File</Button>
           </Upload>
-          <p className="mt-2 text-sm text-gray-500">
-            Photos must be PDF or JPEG format and at least 2048x768
-          </p>
         </Form.Item>
 
         <Form.Item
           label="Allow late Submissions?"
           name="allowLateSubmission"
-          initialValue="yes"
+          initialValue="true"
         >
           <Radio.Group>
-            <Radio value="yes">Yes</Radio>
-            <Radio value="no">No</Radio>
+            <Radio value="true">Yes</Radio>
+            <Radio value="false">No</Radio>
           </Radio.Group>
         </Form.Item>
 

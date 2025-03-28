@@ -1,15 +1,15 @@
 // src/pages/UsersPage.js
 import { useState } from "react";
 import { Button, Pagination, Spin } from "antd";
-import useUsers from "../hooks/useUsers";
 import UserCard from "../components/UserCard";
 import UserModal from "../components/UserModal";
+import { useAdminUsers } from "../hooks/hooks";
 
 const UsersPage = () => {
   const [page, setPage] = useState(1);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const limit = 10;
-  const { data, isLoading, error } = useUsers(page, limit);
+  const { data, isLoading, error } = useAdminUsers(page, limit);
 
   const showModal = () => {
     setIsModalVisible(true);
@@ -32,6 +32,7 @@ const UsersPage = () => {
       </div>
     );
 
+  console.log("data", data);
   return (
     <div>
       <div className="mb-4 flex items-center justify-end">

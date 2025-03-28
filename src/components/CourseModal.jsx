@@ -1,46 +1,34 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Modal, Form, Input, Select, Button, Spin } from "antd";
-import {
-  useCourse,
-  useCreateCourse,
-  useDeleteCourse,
-  useUpdateCourse,
-} from "../hooks/useCourseData"; // Custom hook for data fetching
+import { useUpdateCourse } from "../hooks/useCourseData"; // Custom hook for data fetching
+import { useCreateCourse, useUsers } from "../hooks/hooks";
 
-import useUsers from "../hooks/useUsers";
-
-const CourseModal = ({
-  visible,
-  onCancel,
-  onCreateOrUpdate,
-  courseId = null,
-}) => {
+const CourseModal = ({ visible, onCancel, courseId = null }) => {
   const [form] = Form.useForm();
   const { data: users, isLoading: isUsersLoading } = useUsers();
-  const { data: courseData, isLoading: isCourseLoading } = useCourse(courseId);
+  // const { data: courseData, isLoading: isCourseLoading } = useCourse(courseId);
 
-  const { mutate: createCourseMutation, isLoading: isCreating } =
-    useCreateCourse();
+  const createCourse = useCreateCourse();
   const { mutate: updateCourseMutation, isLoading: isUpdating } =
     useUpdateCourse();
 
   const [loading, setLoading] = useState(false);
 
   // Reset form and load course data when modal is opened for editing
-  useEffect(() => {
-    if (visible) {
-      form.resetFields();
-      if (courseId && courseData) {
-        form.setFieldsValue({
-          name: courseData.name,
-          code: courseData.code,
-          status: courseData.status,
-          teacherId: courseData.teacherId,
-          studentIds: courseData.studentIds,
-        });
-      }
-    }
-  }, [visible, courseId, courseData, form]);
+  // useEffect(() => {
+  //   if (visible) {
+  //     form.resetFields();
+  //     if (courseId && courseData) {
+  //       form.setFieldsValue({
+  //         name: courseData.name,
+  //         code: courseData.code,
+  //         status: courseData.status,
+  //         teacherId: courseData.teacherId,
+  //         studentIds: courseData.studentIds,
+  //       });
+  //     }
+  //   }
+  // }, [visible, courseId, courseData, form]);
 
   // Handle form submission for creating or updating course
   const handleSubmit = async (values) => {
@@ -51,10 +39,10 @@ const CourseModal = ({
         await updateCourseMutation({ courseId, ...values });
       } else {
         // Create new course
-        await createCourseMutation(values);
+        await createCourse.mutateAsync({ courseData: values });
       }
-      onCreateOrUpdate(); // Callback to close modal and refresh list
       form.resetFields();
+      onCancel();
     } catch (error) {
       console.error("Error submitting course:", error);
     } finally {
@@ -62,7 +50,11 @@ const CourseModal = ({
     }
   };
 
-  if (isUsersLoading || (courseId && isCourseLoading)) {
+  if (
+    isUsersLoading ||
+    courseId
+    // && isCourseLoading
+  ) {
     return <Spin size="large" />;
   }
 
@@ -106,11 +98,13 @@ const CourseModal = ({
           rules={[{ required: true, message: "Please select the teacher!" }]}
         >
           <Select placeholder="Select teacher">
-            {users.map((teacher) => (
-              <Select.Option key={teacher.id} value={teacher.id}>
-                {teacher.firstName} {teacher.lastName}
-              </Select.Option>
-            ))}
+            {users?.data
+              ?.filter((student) => student.role === "teacher")
+              .map((teacher) => (
+                <Select.Option key={teacher.id} value={teacher.id}>
+                  {teacher.firstName} {teacher.lastName}
+                </Select.Option>
+              ))}
           </Select>
         </Form.Item>
 
@@ -124,11 +118,13 @@ const CourseModal = ({
             placeholder="Select students"
             style={{ width: "100%" }}
           >
-            {users.map((student) => (
-              <Select.Option key={student.id} value={student.id}>
-                {student.firstName} {student.lastName}
-              </Select.Option>
-            ))}
+            {users?.data
+              ?.filter((student) => student.role === "student")
+              .map((student) => (
+                <Select.Option key={student.id} value={student.id}>
+                  {student.firstName} {student.lastName}
+                </Select.Option>
+              ))}
           </Select>
         </Form.Item>
 
@@ -149,8 +145,8 @@ const CourseModal = ({
           {courseId && (
             <Button
               type="danger"
-              onClick={handleDeleteCourse}
-              loading={isDeleting}
+              // onClick={handleDeleteCourse}
+              // loading={isDeleting}
               style={{ marginRight: 8 }}
             >
               Delete Course
@@ -162,7 +158,7 @@ const CourseModal = ({
           <Button
             type="primary"
             htmlType="submit"
-            loading={isCreating || isUpdating}
+            loading={createCourse.isPending || isUpdating}
           >
             {courseId ? "Update Course" : "Create Course"}
           </Button>

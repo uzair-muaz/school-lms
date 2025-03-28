@@ -1,7 +1,7 @@
 import { privateRequest } from "../services/axiosInstance";
 
 export const fetchUsers = async () => {
-  const { data } = await privateRequest.get(`/users?page=${1}&limit=${999999}`);
+  const { data } = await privateRequest.get(`/user`);
   return data;
 };
 
