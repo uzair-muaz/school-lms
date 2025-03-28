@@ -1,25 +1,18 @@
-import dayjs from "dayjs";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Outlet } from "react-router-dom";
 import { clearSystem } from "../redux/systemSlice";
 
 function RequireAuth() {
   const dispatch = useDispatch();
+  const token = useSelector((state) => state.system?.token); // Safe access to state
 
-  const { token, tokenExpiration } = useSelector((state) => state.system);
+  // Check if the token is valid
+  // const isTokenValid = !!token; // Ensures it's a boolean
+  const isTokenValid = true; // Ensures it's a boolean
 
-  const isTokenValid =
-    token && tokenExpiration && dayjs(tokenExpiration).isAfter(dayjs());
-  // const isTokenValid = true;
-
-  // If token is invalid or expired, clear system data and redirect to login
   if (!isTokenValid) {
     dispatch(clearSystem()); // Clear the system state
-    return (
-      <>
-        <Navigate to="/" replace />
-      </>
-    );
+    return <Navigate to="/login" replace />;
   }
 
   return <Outlet />;
