@@ -178,7 +178,11 @@ const ReferenceLetter = () => {
           </div>
           <div className="flex justify-end gap-2">
             <Button onClick={handleCancel}>Cancel</Button>
-            <Button type="primary" htmlType="submit">
+            <Button
+              loading={approveLetter.isPending}
+              type="primary"
+              htmlType="submit"
+            >
               Upload
             </Button>
           </div>
