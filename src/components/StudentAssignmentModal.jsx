@@ -66,6 +66,10 @@ const StudentAssignmentModal = ({ visible, onClose, assignmentId }) => {
               title={"Late Submission Allowed"}
               value={data?.isAllowLateSubmission ? "Yes" : "No"}
             />
+            <FieldValue
+              title={"Grade"}
+              value={data?.grade ? `${data?.grade}%` : "Pending"}
+            />
 
             <List
               dataSource={data?.assignmentBriefUrl}
