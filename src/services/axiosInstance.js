@@ -7,9 +7,9 @@ import { clearSystem } from "../redux/systemSlice";
 // import { clearSystem } from '../redux/systemSlice';
 
 // Define the common base URL
-const BASE_URL =
-  "https://b36b-2401-ba80-a19b-185-5d4e-79e9-2a7-280a.ngrok-free.app/api";
-// const BASE_URL = "http://3.92.229.206:3000/api";
+// const BASE_URL =
+//   "https://b36b-2401-ba80-a19b-185-5d4e-79e9-2a7-280a.ngrok-free.app/api";
+const BASE_URL = "http://3.92.229.206:3000/api";
 
 // Create axios instances
 const privateRequest = axios.create({

@@ -4,10 +4,13 @@ import { useNavigate } from "react-router-dom";
 import { publicRequest } from "../services/axiosInstance";
 import { setToken } from "../redux/systemSlice";
 import { Input, Button, Form, message } from "antd";
+import { useQueryClient } from "@tanstack/react-query";
 export default function Login() {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
   const onFinish = async (values) => {
     setLoading(true);
     try {
@@ -15,6 +18,7 @@ export default function Login() {
       const result = response.data;
       console.log("result", result);
       dispatch(setToken(result.data));
+      queryClient.clear();
       message.success("Login successful!");
       navigate("/dashboard");
     } catch (error) {

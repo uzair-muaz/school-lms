@@ -34,11 +34,9 @@ const CreateAssignmentModal = ({ visible, onCancel }) => {
     formData.append("gradingCriteria", values.gradingCriteria);
     if (values.file) {
       values.file.fileList.forEach((file) => {
-        formData.append("file", file);
+        formData.append("file", file.originFileObj);
       });
     }
-
-    console.log("formData", formData);
 
     await submitAssignment.mutateAsync(
       { formData: formData },

@@ -1,7 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { privateRequest } from "../services/axiosInstance";
 import { message } from "antd";
-import { fetchAssignments, fetchAssignmentsById } from "../apis/assignmentsApi";
+import {
+  fetchAssignments,
+  fetchAssignmentsById,
+  fetchAssignmentsDetailsById,
+} from "../apis/assignmentsApi";
 import {
   createCourse,
   deleteCourse,
@@ -12,6 +16,13 @@ import {
   updateCourse,
 } from "../apis/courseApi";
 import { fetchAdminUsers } from "../apis/userApi";
+import {
+  approveLetter,
+  declineLetter,
+  fetchLetters,
+  initiateLetter,
+  reRequestLetter,
+} from "../apis/letterApi";
 
 // --------- Assignments ------------
 export const useCreateAssignment = () => {
@@ -87,7 +98,7 @@ export const useAssignmentById = (id) => {
 export const useAssignmentDetailById = (id) => {
   return useQuery({
     queryKey: ["assignments", "detail", id],
-    queryFn: () => fetchAssignmentsById(id),
+    queryFn: () => fetchAssignmentsDetailsById(id),
   });
 };
 
@@ -177,5 +188,87 @@ export const useAdminUsers = (page, limit) => {
   return useQuery({
     queryKey: ["users", "admin", page, limit],
     queryFn: () => fetchAdminUsers(page, limit),
+  });
+};
+
+// -------------- Reference Letter -------------------
+
+export const useFetchLetters = (page = 1, limit = 4) => {
+  return useQuery({
+    queryKey: ["letters", page, limit],
+    queryFn: () => fetchLetters(page, limit),
+    keepPreviousData: true,
+  });
+};
+
+// Initiate Letter Hook (POST)
+export const useInitiateLetter = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ letterData }) => initiateLetter(letterData),
+    onSuccess: () => {
+      message.success("Letter initiated successfully!");
+      queryClient.invalidateQueries({ queryKey: ["letters"] });
+    },
+    onError: (error) => {
+      message.error(
+        error.response?.data?.message || "Failed to initiate letter",
+      );
+    },
+  });
+};
+
+// Decline Letter Hook (POST)
+export const useDeclineLetter = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id }) => declineLetter(id),
+    onSuccess: () => {
+      message.success("Letter declined successfully!");
+      queryClient.invalidateQueries({ queryKey: ["letters"] });
+    },
+    onError: (error) => {
+      message.error(
+        error.response?.data?.message || "Failed to decline letter",
+      );
+    },
+  });
+};
+
+// Re-request Letter Hook (POST)
+export const useReRequestLetter = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id }) => reRequestLetter(id),
+    onSuccess: () => {
+      message.success("Letter re-requested successfully!");
+      queryClient.invalidateQueries({ queryKey: ["letters"] });
+    },
+    onError: (error) => {
+      message.error(
+        error.response?.data?.message || "Failed to re-request letter",
+      );
+    },
+  });
+};
+
+// Approve Letter Hook (POST)
+export const useApproveLetter = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, formData }) => approveLetter(id, formData),
+    onSuccess: () => {
+      message.success("Letter approved successfully!");
+      queryClient.invalidateQueries({ queryKey: ["letters"] });
+    },
+    onError: (error) => {
+      message.error(
+        error.response?.data?.message || "Failed to approve letter",
+      );
+    },
   });
 };

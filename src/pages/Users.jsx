@@ -11,6 +11,8 @@ const UsersPage = () => {
   const limit = 10;
   const { data, isLoading, error } = useAdminUsers(page, limit);
 
+  console.log("data", data);
+
   const showModal = () => {
     setIsModalVisible(true);
   };

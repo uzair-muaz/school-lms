@@ -1,46 +1,83 @@
 import React, { useState } from "react";
 import { Table, Tag, Button, Modal, Upload, Form, message, Input } from "antd";
-import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
+import {
+  useApproveLetter,
+  useDeclineLetter,
+  useFetchLetters,
+} from "../hooks/hooks";
+
+import {
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  DownloadOutlined,
+} from "@ant-design/icons";
 
 const statusColors = {
-  Pending: "!bg-yellow-50 !text-yellow-500 !border-yellow-500",
-  Approved: "!bg-blue-50 !text-blue-500 !border-blue-500",
-  Denied: "!bg-red-50 !text-red-500 !border-red-500",
+  pending: "!bg-yellow-50 !text-yellow-500 !border-yellow-500",
+  approved: "!bg-green-50 !text-green-500 !border-green-500",
+  denied: "!bg-red-50 !text-red-500 !border-red-500",
 };
-
 const ReferenceLetter = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
+  const [page, setPage] = useState(1);
+  const { data, isPending } = useFetchLetters(page, 10);
+
   const [form] = Form.useForm();
 
+  const declineLetter = useDeclineLetter();
+  const approveLetter = useApproveLetter();
   const handleAccept = (record) => {
     setSelectedRecord(record);
     setIsModalOpen(true);
   };
 
+  const handleDecline = async (record) => {
+    try {
+      await declineLetter.mutateAsync({
+        id: record.id,
+      });
+      message.success("Letter request declined successfully!");
+    } catch (error) {
+      message.error("Failed to decline the letter request. Please try again.");
+    }
+  };
   const handleCancel = () => {
     setIsModalOpen(false);
     form.resetFields();
   };
 
-  const onFinish = (values) => {
+  const onFinish = async (values) => {
     if (!values.file || values.file.fileList.length === 0) {
       message.error("Please upload a file!");
       return;
     }
 
     const formData = new FormData();
-    formData.append("referenceLetter", values.file.fileList[0].originFileObj);
-    formData.append("studentId", selectedRecord?.key);
-
-    // mutation.mutate(formData);
+    if (values.file) {
+      values.file.fileList.forEach((file) => {
+        formData.append("file", file.originFileObj);
+      });
+    }
+    try {
+      await approveLetter.mutateAsync({
+        id: selectedRecord.id,
+        formData: formData,
+      });
+      handleCancel();
+    } catch (error) {
+      console.log("error", error);
+      message.error("Failed to approve the letter request!");
+    }
   };
 
   const columns = [
     {
       title: "Student Name",
-      dataIndex: "name",
+      dataIndex: ["createdBy", "firstName"], // Access first name from 'createdBy'
       key: "name",
+      render: (text, record) =>
+        `${record.createdBy.firstName} ${record.createdBy.lastName}`, // Concatenate first and last name
     },
     {
       title: "Purpose",
@@ -49,15 +86,18 @@ const ReferenceLetter = () => {
     },
     {
       title: "Requested Date",
-      dataIndex: "date",
+      dataIndex: "createdAt", // Access 'createdAt' for date
       key: "date",
+      render: (text) => new Date(text).toLocaleDateString(), // Format date
     },
     {
       title: "Status",
       dataIndex: "status",
       key: "status",
       render: (status) => (
-        <Tag className={`rounded-lg !px-2 !py-1 ${statusColors[status]}`}>
+        <Tag
+          className={`rounded-lg !px-2 !py-1 ${statusColors[status]} capitalize`}
+        >
           {status}
         </Tag>
       ),
@@ -65,40 +105,44 @@ const ReferenceLetter = () => {
     {
       title: "Action",
       key: "action",
-      render: (_, record) => (
-        <div className="flex gap-2">
-          <Button
-            type="primary"
-            icon={<CheckCircleOutlined />}
-            onClick={() => handleAccept(record)}
-            disabled={record.status !== "Pending"}
-          />
-          <Button type="default" danger icon={<CloseCircleOutlined />} />
-        </div>
-      ),
-    },
-  ];
-
-  const data = [
-    {
-      key: "1",
-      name: "Dr. Smith",
-      purpose: "Job Application",
-      date: "27-06-24",
-      status: "Pending",
-    },
-    {
-      key: "2",
-      name: "Dr. Sherman Upton",
-      purpose: "Master's Program",
-      date: "27-06-24",
-      status: "Approved",
+      render: (_, record) => {
+        return (
+          <div className="flex gap-2">
+            <Button
+              type="primary"
+              icon={<CheckCircleOutlined />}
+              onClick={() => handleAccept(record)}
+              className={`${record.status === "pending" && "!border-green-500 !bg-green-100 !text-green-500"}`}
+              disabled={record.status !== "pending"}
+            />
+            <Button
+              type="default"
+              onClick={() => {
+                handleDecline(record);
+              }}
+              danger
+              icon={<CloseCircleOutlined />}
+              disabled={record.status !== "pending"}
+            />
+          </div>
+        );
+      },
     },
   ];
 
   return (
     <div>
-      <Table columns={columns} dataSource={data} pagination={{ pageSize: 5 }} />
+      <Table
+        columns={columns}
+        dataSource={data?.data}
+        pagination={{
+          current: page,
+          pageSize: 4,
+          total: data?.meta?.total,
+          onChange: (newPage) => setPage(newPage),
+        }}
+        loading={isPending}
+      />
 
       {/* Upload File Modal */}
       <Modal

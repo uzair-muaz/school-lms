@@ -35,13 +35,13 @@ const CourseTable = ({ handleEdit, handleDelete }) => {
       key: "action",
       render: (text, record) => (
         <div className="space-x-2">
-          <Button
+          {/* <Button
             type="text"
             onClick={() => handleEdit(record.id)}
             className="!bg-blue-100 !text-blue-500 hover:!bg-blue-200"
           >
             Edit
-          </Button>
+          </Button> */}
           <Popconfirm
             title="Are you sure to delete this course?"
             onConfirm={() => handleDelete(record.id)}

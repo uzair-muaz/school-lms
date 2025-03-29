@@ -12,6 +12,9 @@ import Assignments from "./pages/Assignments";
 import Users from "./pages/Users";
 import Subjects from "./pages/Subjects";
 import ReferenceLetter from "./pages/ReferenceLetter";
+import AssignmentDetails from "./pages/AssignmentDetails";
+import StudentAssignments from "./pages/StudentAssignments";
+import StudentReferenceLetter from "./pages/StudentRefernceLetter";
 
 const App = () => {
   return (
@@ -23,9 +26,18 @@ const App = () => {
           <Route element={<DashboardLayout />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/assignments" element={<Assignments />} />
+            <Route
+              path="/student-assignments"
+              element={<StudentAssignments />}
+            />
+            <Route path="/assignment/:id" element={<AssignmentDetails />} />
             <Route path="/users" element={<Users />} />
             <Route path="/courses" element={<Subjects />} />
             <Route path="/reference-letter" element={<ReferenceLetter />} />
+            <Route
+              path="/student-reference-letter"
+              element={<StudentReferenceLetter />}
+            />
 
             {/* {publicRoutes.map((route, index) => (
             <Route

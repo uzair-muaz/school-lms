@@ -1,8 +1,11 @@
-import { Table, Tag } from "antd";
+import { Button, Table, Tag } from "antd";
 import { useState } from "react";
 import { useAssignments } from "../hooks/hooks";
+import { AiTwotoneEye } from "react-icons/ai";
+import { Link, useNavigate } from "react-router-dom";
 
 const AssignmentTable = () => {
+  const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const { data, isPending, error } = useAssignments(page, 10);
 
@@ -45,12 +48,17 @@ const AssignmentTable = () => {
     {
       title: "Action",
       key: "action",
-      render: () => (
-        <Button
-          type="text"
-          icon={<EyeOutlined />}
-          className="!bg-blue-100 !text-blue-500 hover:!bg-blue-200"
-        />
+      render: (_, record) => (
+        <>
+          <Button
+            onClick={() => {
+              navigate(`/assignment/${record.id}`);
+            }}
+            type="text"
+            icon={<AiTwotoneEye />}
+            className="!bg-blue-100 !text-blue-500 hover:!bg-blue-200"
+          />
+        </>
       ),
     },
   ];

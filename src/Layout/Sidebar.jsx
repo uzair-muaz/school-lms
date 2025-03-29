@@ -55,7 +55,7 @@ const Sidebar = () => {
           )}
           {role !== "admin" && (
             <SidebarItem
-              to="/assignments"
+              to={role === "teacher" ? "/assignments" : "student-assignments"}
               icon={<FaGraduationCap />}
               text="Assignments"
               collapsed={collapsed}
@@ -63,7 +63,11 @@ const Sidebar = () => {
           )}
           {role !== "admin" && (
             <SidebarItem
-              to="/reference-letter"
+              to={
+                role === "teacher"
+                  ? "/reference-letter"
+                  : "student-reference-letter"
+              }
               icon={<FaGraduationCap />}
               text="Reference Letter"
               collapsed={collapsed}
