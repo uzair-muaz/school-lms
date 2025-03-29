@@ -84,7 +84,7 @@ const StudentAssignmentModal = ({ visible, onClose, assignmentId }) => {
             />
           </div>
 
-          {data.status === "submitted" ? (
+          {data.status !== "pending" ? (
             <div>
               <p className="flex items-center gap-1 text-green-500">
                 <TiTickOutline className="text-xl" />
