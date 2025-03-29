@@ -21,7 +21,6 @@ const CreateAssignmentModal = ({ visible, onCancel }) => {
   const { data: assignedCourses } = useAssignedCourses();
 
   const onFinish = async (values) => {
-    console.log("values", values);
     const formData = new FormData();
     formData.append("title", values.title);
     formData.append("description", values.description);
@@ -126,7 +125,11 @@ const CreateAssignmentModal = ({ visible, onCancel }) => {
 
         <div className="flex justify-end gap-3">
           <Button onClick={onCancel}>Cancel</Button>
-          <Button type="primary" htmlType="submit">
+          <Button
+            loading={submitAssignment.isPending}
+            type="primary"
+            htmlType="submit"
+          >
             Create
           </Button>
         </div>

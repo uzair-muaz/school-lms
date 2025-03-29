@@ -124,7 +124,11 @@ const StudentAssignmentModal = ({ visible, onClose, assignmentId }) => {
                   </Form.Item>
                 </div>
                 <div className="flex justify-end">
-                  <Button type="primary" htmlType="submit">
+                  <Button
+                    loading={submitAssignment.isPending}
+                    type="primary"
+                    htmlType="submit"
+                  >
                     Upload
                   </Button>
                 </div>

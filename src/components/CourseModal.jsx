@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Modal, Form, Input, Select, Button, Spin } from "antd";
-import { useUpdateCourse } from "../hooks/useCourseData"; // Custom hook for data fetching
+// import { useUpdateCourse } from "../hooks/useCourseData"; // Custom hook for data fetching
 import { useCreateCourse, useUsers } from "../hooks/hooks";
 
 const CourseModal = ({ visible, onCancel, courseId = null }) => {
@@ -9,8 +9,8 @@ const CourseModal = ({ visible, onCancel, courseId = null }) => {
   // const { data: courseData, isLoading: isCourseLoading } = useCourse(courseId);
 
   const createCourse = useCreateCourse();
-  const { mutate: updateCourseMutation, isLoading: isUpdating } =
-    useUpdateCourse();
+  // const { mutate: updateCourseMutation, isLoading: isUpdating } =
+  //   useUpdateCourse();
 
   const [loading, setLoading] = useState(false);
 
@@ -34,13 +34,13 @@ const CourseModal = ({ visible, onCancel, courseId = null }) => {
   const handleSubmit = async (values) => {
     setLoading(true);
     try {
-      if (courseId) {
-        // Update course
-        await updateCourseMutation({ courseId, ...values });
-      } else {
-        // Create new course
-        await createCourse.mutateAsync({ courseData: values });
-      }
+      // if (courseId) {
+      //   // Update course
+      //   await updateCourseMutation({ courseId, ...values });
+      // } else {
+      //   // Create new course
+      // }
+      await createCourse.mutateAsync({ courseData: values });
       form.resetFields();
       onCancel();
     } catch (error) {
@@ -155,11 +155,7 @@ const CourseModal = ({ visible, onCancel, courseId = null }) => {
           <Button type="default" onClick={onCancel} style={{ marginRight: 8 }}>
             Cancel
           </Button>
-          <Button
-            type="primary"
-            htmlType="submit"
-            loading={createCourse.isPending || isUpdating}
-          >
+          <Button type="primary" htmlType="submit" loading={loading}>
             {courseId ? "Update Course" : "Create Course"}
           </Button>
         </div>
