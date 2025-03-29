@@ -86,16 +86,30 @@ const AssignmentDetailsTable = () => {
     {
       title: "Action",
       key: "action",
-      render: (_, record) => (
-        <Button
-          onClick={() =>
-            handleActionClick(record.submissionUrl, record.studentId)
-          }
-          type="text"
-          icon={<CiEdit className="text-xl" />}
-          className="!bg-blue-100 !text-blue-500 hover:!bg-blue-200"
-        />
-      ),
+      render: (_, record) => {
+        console.log("record", record);
+        const applyStyle =
+          record.grade === null && record.status === "submitted";
+
+        const disableButton =
+          record.grade !== null || record.status === "unsubmitted";
+
+        console.log("applyStyle", applyStyle);
+
+        return (
+          <>
+            <Button
+              disabled={disableButton}
+              onClick={() =>
+                handleActionClick(record.submissionUrl, record.studentId)
+              }
+              type="text"
+              icon={<CiEdit className="text-xl" />}
+              className={`${applyStyle ? "!bg-blue-100 !text-blue-500 hover:!bg-blue-200" : ""}`}
+            />
+          </>
+        );
+      },
     },
   ];
 

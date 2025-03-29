@@ -1,7 +1,7 @@
 import React from "react";
 import { Modal, Button, Input, Space, Tag, Form, message } from "antd";
-import { IoMdDownload } from "react-icons/io";
 import { useGradeAssignment } from "../hooks/hooks";
+import { CiFileOn } from "react-icons/ci";
 
 const GradeAssignmentModal = ({
   visible,
@@ -16,10 +16,7 @@ const GradeAssignmentModal = ({
   const handleDownload = () => {
     if (submissionUrl && submissionUrl.length > 0) {
       const fileUrl = submissionUrl[0];
-      const a = document.createElement("a");
-      a.href = fileUrl;
-      a.download = fileUrl.split("/").pop();
-      a.click();
+      window.open(fileUrl, "_blank");
     }
   };
 
@@ -61,11 +58,16 @@ const GradeAssignmentModal = ({
         <div>
           {submissionUrl && submissionUrl.length > 0 ? (
             <Space direction="vertical">
-              <Button icon={<IoMdDownload />} onClick={handleDownload}>
-                Download Submission
-              </Button>
-              <Tag color="blue" style={{ cursor: "pointer" }}>
-                View Submission
+              {/* <Button icon={<IoMdDownload />}>Download Submission</Button> */}
+              <Tag
+                color="blue"
+                className="!px-4 !py-2"
+                style={{ cursor: "pointer" }}
+                onClick={handleDownload}
+              >
+                <div className="flex items-center gap-1">
+                  <CiFileOn className="text-xl" /> Download Submission
+                </div>
               </Tag>
             </Space>
           ) : (
